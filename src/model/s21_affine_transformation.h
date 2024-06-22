@@ -20,8 +20,9 @@ class AffineTransformation {
   AffineTransformation();
   ~AffineTransformation();
   void move_points(Parser* parser, double move_x, double move_y, double move_z);
-  void rotation_point(S21Matrix& point, Axes axis, double angle);
-  void scale_point(S21Matrix& point, double* scale_ratio);
+  void rotation_points(Parser* parser, Axes axis, double angle);
+  void scale_points(Parser* parser, double scale_x, double scale_y,
+                    double scale_z);
 
  private:
   S21Matrix create_transfer_matrix(double* moving_coordinates);

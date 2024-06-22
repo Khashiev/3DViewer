@@ -18,8 +18,8 @@ void AffineTransformation::move_points(Parser* parser, double move_x,
   }
 }
 
-void AffineTransformation::rotation_point(S21Matrix& point, Axes axis,
-                                          double angle) {
+void AffineTransformation::rotation_points(Parser* parser, Axes axis,
+                                           double angle) {
   S21Matrix rotation_matrix(ORDER_TRANSFER_MATRIX, ORDER_TRANSFER_MATRIX);
   if (axis == AxisX) {
     rotation_matrix = create_rotation_X_matrix(angle);
@@ -28,12 +28,22 @@ void AffineTransformation::rotation_point(S21Matrix& point, Axes axis,
   } else if (axis == AxisZ) {
     rotation_matrix = create_rotation_Z_matrix(angle);
   }
-  point = rotation_matrix * point;
+  S21Matrix point(3, 3);
+  for (int i = 0; i < parser->matrix_points.size(); i++) {
+    point = parser->matrix_points[i];
+    parser->matrix_points[i] = rotation_matrix * point;
+  }
 }
 
-void AffineTransformation::scale_point(S21Matrix& point, double* scale_ratio) {
+void AffineTransformation::scale_points(Parser* parser, double scale_x,
+                                        double scale_y, double scale_z) {
+  double scale_ratio[3] = {scale_x, scale_y, scale_z};
   S21Matrix scale_matrix = create_scale_matrix(scale_ratio);
-  point = scale_matrix * point;
+  S21Matrix point(3, 3);
+  for (int i = 0; i < parser->matrix_points.size(); i++) {
+    point = parser->matrix_points[i];
+    parser->matrix_points[i] = scale_matrix * point;
+  }
 }
 
 S21Matrix AffineTransformation::create_transfer_matrix(
@@ -76,7 +86,6 @@ S21Matrix AffineTransformation::create_rotation_Z_matrix(double angle) {
   matrix[0][1] = -sin(angle_in_rad);
   matrix[1][0] = -matrix[0][1];
   matrix[1][1] = matrix[0][0];
-  show_matrix(matrix);
   return matrix;
 }
 
