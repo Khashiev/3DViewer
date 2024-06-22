@@ -43,6 +43,15 @@
         "limits": "cpp",
         "new": "cpp",
         "numbers": "cpp",
-        "typeinfo": "cpp"
+        "typeinfo": "cpp",
+        "any": "cpp",
+        "ctime": "cpp",
+        "map": "cpp",
+        "set": "cpp",
+        "optional": "cpp",
+        "iomanip": "cpp",
+        "sstream": "cpp",
+        "cinttypes": "cpp",
+        "variant": "cpp"
     }
 }

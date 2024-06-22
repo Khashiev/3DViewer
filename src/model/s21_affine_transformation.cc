@@ -6,18 +6,21 @@ AffineTransformation::AffineTransformation() {}
 
 AffineTransformation::~AffineTransformation() {}
 
-void AffineTransformation::move_point(S21Matrix& point,
-                                      int* moving_coordinates) {
+void AffineTransformation::move_points(Parser* parser, double move_x,
+                                       double move_y, double move_z) {
+  double moving_coordinates[3] = {move_x, move_y, move_z};
   S21Matrix transfer_matrix = create_transfer_matrix(moving_coordinates);
-  std::cout << point.get_cols() << " " << point.get_rows() << std::endl;
-  std::cout << transfer_matrix.get_cols() << " " << transfer_matrix.get_rows()
-            << std::endl;
-  point = transfer_matrix * point;
+  std::cout << std::endl;
+  S21Matrix point(3, 3);
+  for (int i = 0; i < parser->matrix_points.size(); i++) {
+    point = parser->matrix_points[i];
+    parser->matrix_points[i] = transfer_matrix * point;
+  }
 }
 
 void AffineTransformation::rotation_point(S21Matrix& point, Axes axis,
                                           double angle) {
-  S21Matrix rotation_matrix(4, 4);
+  S21Matrix rotation_matrix(ORDER_TRANSFER_MATRIX, ORDER_TRANSFER_MATRIX);
   if (axis == AxisX) {
     rotation_matrix = create_rotation_X_matrix(angle);
   } else if (axis == AxisY) {
@@ -28,8 +31,13 @@ void AffineTransformation::rotation_point(S21Matrix& point, Axes axis,
   point = rotation_matrix * point;
 }
 
+void AffineTransformation::scale_point(S21Matrix& point, double* scale_ratio) {
+  S21Matrix scale_matrix = create_scale_matrix(scale_ratio);
+  point = scale_matrix * point;
+}
+
 S21Matrix AffineTransformation::create_transfer_matrix(
-    int* moving_coordinates) {
+    double* moving_coordinates) {
   S21Matrix matrix(ORDER_TRANSFER_MATRIX, ORDER_TRANSFER_MATRIX);
   make_unit_matrix(matrix);
   for (int i = 0; i < DIMENSION_SPACE; i++) {
@@ -69,6 +77,14 @@ S21Matrix AffineTransformation::create_rotation_Z_matrix(double angle) {
   matrix[1][0] = -matrix[0][1];
   matrix[1][1] = matrix[0][0];
   show_matrix(matrix);
+  return matrix;
+}
+
+S21Matrix AffineTransformation::create_scale_matrix(double* scale_ratio) {
+  S21Matrix matrix(ORDER_TRANSFER_MATRIX, ORDER_TRANSFER_MATRIX);
+  for (int i = 0; i < ORDER_TRANSFER_MATRIX; i++) {
+    matrix[i][i] = scale_ratio[i];
+  }
   return matrix;
 }
 
