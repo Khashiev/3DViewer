@@ -36,8 +36,8 @@ void Parser::OpenFile(const std::string& filename) {
 void Parser::ReadFile() {
   std::string reading_str;
 
-  struct_vertex.set_rows(4);
-  struct_vertex.set_cols(1);
+  vertex.set_rows(4);
+  vertex.set_cols(1);
 
   while (!file.eof() && !error) {
     std::getline(file, reading_str);
@@ -46,12 +46,12 @@ void Parser::ReadFile() {
     if (str.find("v ") == 0) {
       vert_cnt++;
       TakeVertex(str);
-      matrix_points.push_back(struct_vertex);
+      matrix_points.push_back(vertex);
     }
 
     if (str.find("f ") == 0) {
       pol_cnt++;
-      TakePolygon(str);
+      TakeFacet(str);
     }
   }
 
@@ -67,7 +67,7 @@ void Parser::TakeVertex(std::string_view str) {
     if ((std::isdigit(str[i]) || str[i] == '-') && str[i - 1] == ' ' &&
         number_cols < 4) {
       number_cols++;
-      PushVertexPoint(str, &i, number_cols);
+      PushMatrixPoint(str, &i, number_cols);
     }
   }
 
@@ -76,7 +76,7 @@ void Parser::TakeVertex(std::string_view str) {
   }
 }
 
-void Parser::PushVertexPoint(std::string_view str, size_t* pos,
+void Parser::PushMatrixPoint(std::string_view str, size_t* pos,
                              int number_cols) {
   std::string number;
   size_t iter = *pos;
@@ -88,11 +88,11 @@ void Parser::PushVertexPoint(std::string_view str, size_t* pos,
 
   float res = std::stod(number);
   if (number_cols == 1) {
-    struct_vertex[0][0] = res;
+    vertex[0][0] = res;
   } else if (number_cols == 2) {
-    struct_vertex[1][0] = res;
+    vertex[1][0] = res;
   } else if (number_cols == 3) {
-    struct_vertex[2][0] = res;
+    vertex[2][0] = res;
   }
 
   FindMinMax(number_cols, res);
@@ -111,20 +111,20 @@ void Parser::FindMinMax(int number_cols, float value) {
   }
 }
 
-void Parser::TakePolygon(std::string_view str) {
+void Parser::TakeFacet(std::string_view str) {
   size_t cnt_lines = 0;
 
   for (size_t i = 0; i < str.size() & !error; i++) {
     if ((std::isdigit(str[i]) || str[i] == '-') && str[i - 1] == ' ') {
       cnt_lines++;
 
-      line_of_polygon.pol[0] = PushPolygonPoint(str, &i);
-      line_of_polygon.pol[1] = line_of_polygon.pol[1];
+      facet.pol[0] = PushPolygonPoint(str, &i);
+      facet.pol[1] = facet.pol[0];
 
-      polygons.push_back(line_of_polygon);
+      polygons.push_back(facet);
 
       if (cnt_lines > 1) {
-        polygons[polygons.size() - 2].pol[1] = line_of_polygon.pol[1];
+        polygons[polygons.size() - 2].pol[1] = facet.pol[1];
       }
     }
   }
@@ -152,7 +152,7 @@ int Parser::PushPolygonPoint(std::string_view str, size_t* pos) {
     }
   } else if (res > 0) {
     if (res > vert_cnt) {
-      error = 4;
+      error = 3;
     } else {
       --res;
     }

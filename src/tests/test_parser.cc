@@ -26,16 +26,6 @@ TEST(Parser, test_3) {
   pars.OpenFile(filename);
   std::vector<s21::S21Matrix> matrix = pars.GetMatrixPoints();
 
-  // std::vector<s21::S21Matrix> matrix2;
-  // for (int j = 0; j < pars.GetVertexes(); j++) {
-  //   s21::S21Matrix res_matrix(4, 1);
-  //   for (int i = 0, k = 1; i < 3; i++, k += 2) {
-  //     res_matrix[i][0] = k;
-  //   }
-  //   matrix2.push_back(res_matrix);
-  // }
-  // ASSERT_TRUE(matrix == matrix2);
-
   s21::S21Matrix res_matrix(4, 1);
   for (int i = 0, k = 1; i < 3; i++, k += 2) res_matrix[i][0] = k;
   EXPECT_EQ(matrix.at(0), res_matrix);
@@ -48,6 +38,19 @@ TEST(Parser, test_3) {
 
   for (int i = 0, k = 19; i < 3; i++, k += 2) res_matrix[i][0] = k;
   EXPECT_EQ(matrix.at(3), res_matrix);
+}
 
-  // std::cout << pars.GetArrayPolygons().at(0).pol[1] << '\n';
+TEST(Parser, test_4) {
+  std::vector<s21::Polygon> expect_polygon = {{0, 1}, {1, 2}, {2, 0},
+                                              {1, 2}, {2, 0}, {0, 1}};
+
+  s21::Parser pars;
+  std::string filename = "tests/obj/parser.txt";
+  pars.OpenFile(filename);
+
+  std::vector<s21::Polygon> polygons = pars.GetArrayPolygons();
+  for (int i = 0; i < polygons.size(); i++) {
+    EXPECT_EQ(polygons.at(i).pol[0], expect_polygon.at(i).pol[0]);
+    EXPECT_EQ(polygons.at(i).pol[1], expect_polygon.at(i).pol[1]);
+  }
 }

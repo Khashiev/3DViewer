@@ -47,15 +47,15 @@ class Parser {
   std::vector<s21::S21Matrix> matrix_points;
   std::vector<Polygon> polygons;
 
-  s21::S21Matrix struct_vertex;
-  Polygon line_of_polygon;
+  s21::S21Matrix vertex;
+  Polygon facet;
 
  private:
   void Clean();
   void ReadFile();
   void TakeVertex(std::string_view str);
-  void PushVertexPoint(std::string_view str, size_t* pos, int number_cols);
-  void TakePolygon(std::string_view str);
+  void PushMatrixPoint(std::string_view str, size_t* pos, int number_cols);
+  void TakeFacet(std::string_view str);
   int PushPolygonPoint(std::string_view str, size_t* pos);
   void FindMinMax(int number_cols, float value);
 };
