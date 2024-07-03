@@ -23,8 +23,10 @@ struct MinMax {
 
 class Parser {
  public:
-  Parser();
-  ~Parser();
+  static Parser& getInstance() {
+    static Parser instance;
+    return instance;
+  }
 
   void OpenFile(const std::string& filename);
 
@@ -49,6 +51,13 @@ class Parser {
 
   s21::S21Matrix vertex;
   Polygon facet;
+
+ private:
+  Parser(){};
+  ~Parser(){};
+  Parser(const Parser& other) = delete;
+  Parser(Parser&& other) = delete;
+  void operator=(const Parser& other) = delete;
 
  private:
   void Clean();

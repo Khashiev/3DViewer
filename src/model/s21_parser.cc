@@ -1,9 +1,6 @@
 #include "s21_parser.h"
 
 namespace s21 {
-Parser::Parser() {}
-
-Parser::~Parser() {}
 
 void Parser::Clean() {
   matrix_points.clear();

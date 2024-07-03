@@ -4,7 +4,7 @@
 #include "../model/s21_parser.h"
 
 TEST(Parser, test_1) {
-  s21::Parser pars;
+  s21::Parser& pars = s21::Parser::getInstance();
   std::string filename = "tests/obj/cube.obj";
   pars.OpenFile(filename);
 
@@ -13,7 +13,7 @@ TEST(Parser, test_1) {
 }
 
 TEST(Parser, test_2) {
-  s21::Parser pars;
+  s21::Parser& pars = s21::Parser::getInstance();
   std::string filename = "blabla";
   pars.OpenFile(filename);
 
@@ -21,7 +21,7 @@ TEST(Parser, test_2) {
 }
 
 TEST(Parser, test_3) {
-  s21::Parser pars;
+  s21::Parser& pars = s21::Parser::getInstance();
   std::string filename = "tests/obj/parser.txt";
   pars.OpenFile(filename);
   std::vector<s21::S21Matrix> matrix = pars.GetMatrixPoints();
@@ -44,7 +44,7 @@ TEST(Parser, test_4) {
   std::vector<s21::Polygon> expect_polygon = {{0, 1}, {1, 2}, {2, 0},
                                               {1, 2}, {2, 0}, {0, 1}};
 
-  s21::Parser pars;
+  s21::Parser& pars = s21::Parser::getInstance();
   std::string filename = "tests/obj/parser.txt";
   pars.OpenFile(filename);
 
