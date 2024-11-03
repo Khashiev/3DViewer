@@ -16,17 +16,15 @@ struct Polygon {
 };
 
 struct MinMax {
-  float x_min, x_max;
-  float y_min, y_max;
-  float z_min, z_max;
+  double x_min, x_max;
+  double y_min, y_max;
+  double z_min, z_max;
 };
 
 class Parser {
  public:
-  static Parser& getInstance() {
-    static Parser instance;
-    return instance;
-  }
+  Parser(){};
+  ~Parser(){};
 
   void OpenFile(const std::string& filename);
 
@@ -37,6 +35,25 @@ class Parser {
 
   const std::vector<s21::S21Matrix>& GetMatrixPoints();
   const std::vector<Polygon>& GetArrayPolygons();
+  std::vector<s21::S21Matrix> matrix_points;
+
+  std::vector<Polygon> polygons;
+  void Clean();
+  MinMax min_max;
+
+ public:
+  class Memento {
+   private:
+    std::vector<s21::S21Matrix> Matrix_points;
+
+   public:
+    std::vector<s21::S21Matrix> GetState() const { return Matrix_points; }
+    Memento(const std::vector<s21::S21Matrix>& matrix_points)
+        : Matrix_points(matrix_points) {}
+  };
+
+  Memento* saveState() { return new Memento(matrix_points); }
+  void RestoreState(Memento* memento) { matrix_points = memento->GetState(); }
 
  private:
   int error;
@@ -44,30 +61,28 @@ class Parser {
   int pol_cnt;
 
   std::ifstream file;
-  MinMax min_max;
 
-  std::vector<s21::S21Matrix> matrix_points;
-  std::vector<Polygon> polygons;
-
-  s21::S21Matrix vertex;
-  Polygon facet;
+  s21::S21Matrix vertex;  // временная переменная для работы программы
+  Polygon facet;  // временное хранилище для 1 вершины 1 ребра
 
  private:
-  Parser(){};
-  ~Parser(){};
-  Parser(const Parser& other) = delete;
-  Parser(Parser&& other) = delete;
-  void operator=(const Parser& other) = delete;
-
- private:
-  void Clean();
   void ReadFile();
   void TakeVertex(std::string_view str);
   void PushMatrixPoint(std::string_view str, size_t* pos, int number_cols);
   void TakeFacet(std::string_view str);
   int PushPolygonPoint(std::string_view str, size_t* pos);
-  void FindMinMax(int number_cols, float value);
+  void FindMinMax(int number_cols, double value);
 };
+
+class Caretaker {
+ private:
+  s21::Parser::Memento* memento;
+
+ public:
+  void AddMemento(Parser::Memento* new_memento) { memento = new_memento; }
+  Parser::Memento* GetMemento() { return memento; }
+};
+
 }  // namespace s21
 
 #endif

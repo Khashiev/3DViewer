@@ -83,7 +83,7 @@ void Parser::PushMatrixPoint(std::string_view str, size_t* pos,
   }
   *pos = iter;
 
-  float res = std::stod(number);
+  double res = std::stod(number);
   if (number_cols == 1) {
     vertex[0][0] = res;
   } else if (number_cols == 2) {
@@ -95,7 +95,7 @@ void Parser::PushMatrixPoint(std::string_view str, size_t* pos,
   FindMinMax(number_cols, res);
 }
 
-void Parser::FindMinMax(int number_cols, float value) {
+void Parser::FindMinMax(int number_cols, double value) {
   if (number_cols == 1) {
     min_max.x_min = std::min(value, min_max.x_min);
     min_max.x_max = std::max(value, min_max.x_max);
@@ -110,8 +110,7 @@ void Parser::FindMinMax(int number_cols, float value) {
 
 void Parser::TakeFacet(std::string_view str) {
   size_t cnt_lines = 0;
-
-  for (size_t i = 0; i < str.size() & !error; i++) {
+  for (size_t i = 0; i < str.size() && !error; i++) {
     if ((std::isdigit(str[i]) || str[i] == '-') && str[i - 1] == ' ') {
       cnt_lines++;
 
